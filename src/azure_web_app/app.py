@@ -1,11 +1,41 @@
 from datetime import datetime
 from flask import Flask, abort, render_template
-from flask import Flask, render_template
 
 FAVORITES = [
     {"id": 1, "title": "Offensive Memes", "why": "I like Offensive memes because they make people uncomfortable"},
     {"id": 2, "title": "Dank Memes", "why": "L33T, SNOOP DAWG, MOM GET TH CAMERA!"},
     {"id": 3, "title": "2007 MEMES", "why": "rawr xd, ALL YOUR BASE ARE BELONG TO USE,i CAN HAZ CHEEZBURGER, etc."},
+]
+
+MEME_ERAS = [
+    {
+        "name": "Early Internet",
+        "years": "1990s-2000s",
+        "year": 2007,
+        "description": "All Your Base Are Belong to Us, dancing babies, and the first viral image macros.",
+        "format": "Image macros",
+    },
+    {
+        "name": "Rage Comics",
+        "years": "2008-2012",
+        "year": 2010,
+        "description": "Forever Alone, Trollface, and comics that turned everyday frustrations into jokes.",
+        "format": "Comic strips",
+    },
+    {
+        "name": "Reaction Images",
+        "years": "2012-2016",
+        "year": 2014,
+        "description": "A perfectly timed screenshot or GIF could say everything without a reply.",
+        "format": "GIFs and screenshots",
+    },
+    {
+        "name": "Short-Form Video",
+        "years": "2017-today",
+        "year": 2020,
+        "description": "Remixes, sounds, and short videos that spread from one feed to the next.",
+        "format": "Short videos",
+    },
 ]
 
 
@@ -14,6 +44,7 @@ def create_app():
     setup_routes(app)
     return app
 
+
 def favorite_detail(favorite_id: int):
     for favorite in FAVORITES:
         if favorite["id"] == favorite_id:
@@ -21,9 +52,15 @@ def favorite_detail(favorite_id: int):
     abort(404)
 
 
+def memes_page():
+    return render_template("memes.html", meme_eras=MEME_ERAS)
+
+
 def setup_routes(app):
     app.route("/")(index)
     app.route("/favorites/<int:favorite_id>")(favorite_detail)
+    app.route("/memes")(memes_page)
+
 
 def index():
     return render_template(

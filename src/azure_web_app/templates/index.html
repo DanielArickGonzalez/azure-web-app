@@ -18,11 +18,13 @@
 
   <h1>Hello {{ name }}!</h1>
   <p>I spend about {{ hours_per_week }} hours a week on {{ hobby }}.</p>
-  <p>Click the button to increment the counter:</p>
-  <button id="incrementButton" class="btn btn-primary">
-    Increment Counter
-  </button>
-  <p>Counter: <span id="counter">0</span></p>
+  {% if show_counter %}
+    <p>Click the button to increment the counter:</p>
+    <button id="incrementButton" class="btn btn-primary">
+      Increment Counter
+    </button>
+    <p>Counter: <span id="counter">0</span></p>
+  {% endif %}
 
   <p>{{ hobby | upper }}</p>
   <p>That's about {{ (hours_per_week * 52 / 24) | round(1) }} days a year.</p>
@@ -50,5 +52,7 @@
 {% endblock %}
 
 {% block scripts %}
-  <script src="{{ url_for('static', filename='js/button.js') }}"></script>
+  {% if show_counter %}
+    <script src="{{ url_for('static', filename='js/button.js') }}"></script>
+  {% endif %}
 {% endblock %}

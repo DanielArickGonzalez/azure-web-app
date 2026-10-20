@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Meme Time Capsule{% endblock %}
+
+{% block content %}
+  <div class="alert alert-primary" role="alert">
+    A quick tour through memorable eras of internet memes.
+  </div>
+
+  <h1>Meme Time Capsule</h1>
+  <p class="lead">Browse {{ meme_eras | length }} eras of meme history.</p>
+
+  {% if meme_eras %}
+    <div class="row g-3">
+      {% for era in meme_eras %}
+        <div class="col-12 col-lg-6">
+          <article class="card h-100">
+            <div class="card-body">
+              <h2 class="card-title h4">{{ era.name | upper }}</h2>
+              <span class="badge text-bg-secondary">{{ era.years }}</span>
+              {% if era.year < 2010 %}
+                <span class="badge text-bg-warning">Classic</span>
+              {% endif %}
+              <p class="card-text mt-3">{{ era.description | truncate(140) }}</p>
+              <h3 class="h6">Popular formats</h3>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">{{ era.format }}</li>
+              </ul>
+            </div>
+          </article>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="accordion mt-4" id="memeNotes">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="memeNotesHeading">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#memeNotesBody"
+            aria-expanded="false"
+            aria-controls="memeNotesBody"
+          >
+            What makes a meme last?
+          </button>
+        </h2>
+        <div
+          id="memeNotesBody"
+          class="accordion-collapse collapse"
+          aria-labelledby="memeNotesHeading"
+          data-bs-parent="#memeNotes"
+        >
+          <div class="accordion-body">
+            Memes are easy to recognize, adapt, and share. The formats change,
+            but the best ones make a familiar moment funny in a new way.
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-secondary" role="status">
+      No meme eras have been added yet.
+    </div>
+  {% endif %}
+{% endblock %}
