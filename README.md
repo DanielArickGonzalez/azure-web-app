@@ -12,6 +12,11 @@ uv run launch-app
 Then open `http://127.0.0.1:5000`. The home page is at `/`, and the Meme Time
 Capsule page is at `/memes`.
 
+Registration and login use Azure SQL. Set `AZURE_SQL_CONNECTIONSTRING` in your
+environment or in a root-level `.secret.env` file before using those forms.
+Use the connection string without its `Driver=...;` prefix; `mssql-python`
+provides its own driver.
+
 ## Azure App Service
 
 The GitHub Actions deployment workflow deploys the repository root. Azure's

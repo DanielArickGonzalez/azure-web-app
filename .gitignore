@@ -2,3 +2,4 @@
 antenv/
 __pycache__/
 *.py[cod]
+.secret.env

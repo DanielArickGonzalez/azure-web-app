@@ -10,21 +10,26 @@
     />
   </head>
   <body>
-    <nav class="navbar navbar-expand bg-body-tertiary mb-4">
-      <div class="container">
-        <a class="navbar-brand" href="{{ url_for('index') }}">CS 188</a>
-        <div class="navbar-nav">
-          <a class="nav-link" href="{{ url_for('index') }}">Home</a>
-          <a class="nav-link" href="{{ url_for('memes_page') }}">Meme Time Capsule</a>
-        </div>
-      </div>
-    </nav>
+<nav class="navbar navbar-expand bg-body-tertiary mb-4">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('index') }}">CS 188</a>
+    <div class="navbar-nav">
+      <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+      <a class="nav-link" href="{{ url_for('memes_page') }}">Meme Time Capsule</a>
+    </div>
+    {% include "components/account_nav.html" %}
+  </div>
+</nav>
 
     <main class="container">
       {% block content %}{% endblock %}
     </main>
 
+    {% include "components/register_modal.html" %}
+    {% include "components/login_modal.html" %}
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
     {% block scripts %}{% endblock %}
   </body>
 </html>
