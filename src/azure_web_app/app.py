@@ -3,8 +3,9 @@ from datetime import datetime
 from dotenv import find_dotenv, load_dotenv
 from flask import Flask, abort, render_template
 
-from azure_web_app import auth, db
+from azure_web_app import auth, db, sessions
 from azure_web_app._constants import SECRET_ENV_FILE
+from azure_web_app.sessions import login_required
 
 
 FAVORITES = [
@@ -45,10 +46,21 @@ MEME_ERAS = [
 ]
 
 
+@login_required
+def account():
+    return render_template("account.html")
+
+
+@login_required
+def members_page():
+    return render_template("members.html")
+
+
 def create_app():
     load_dotenv(find_dotenv(SECRET_ENV_FILE))
     app = Flask(__name__)
     db.setup_for_app(app)
+    sessions.setup_sessions(app)
     auth.setup_auth(app)
     setup_routes(app)
     return app
@@ -68,6 +80,8 @@ def setup_routes(app):
     app.route("/")(index)
     app.route("/favorites/<int:favorite_id>")(favorite_detail)
     app.route("/memes")(memes_page)
+    app.route("/account")(account)
+    app.route("/members")(members_page)
 
 
 def index():

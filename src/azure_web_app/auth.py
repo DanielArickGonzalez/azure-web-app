@@ -4,7 +4,7 @@
 Endpoints decide what should happen; the Database class in db.py handles SQL.
 """
 
-from flask import Flask, request
+from flask import Flask, g, make_response, request
 from flask_bcrypt import check_password_hash, generate_password_hash
 from flask_restful import Api, Resource
 
@@ -13,9 +13,11 @@ from ._constants import (
     MAX_USERNAME_LENGTH,
     MIN_PASSWORD_LENGTH,
     PASSWORD_PATTERN,
+    SESSION_COOKIE_NAME,
     USERNAME_PATTERN,
 )
 from .db import get_db
+from .sessions import clear_session_cookie, set_session_cookie, verify_session_cookie
 
 
 def get_json_body() -> dict:
@@ -122,7 +124,35 @@ class Login(Resource):
             message = f"Welcome back, {user.display_name}! Your last login was {user.last_login}."
 
         db.update_last_login(username)
-        return {"message": message}, 200
+        session_id = db.create_session(user.userid)
+        response = make_response(
+            {"message": message, "displayName": user.display_name},
+            200,
+        )
+        set_session_cookie(response, session_id)
+        return response
+
+
+class Logout(Resource):
+    def post(self):
+        session_id = verify_session_cookie(request.cookies.get(SESSION_COOKIE_NAME))
+        if session_id is not None:
+            get_db().delete_session(session_id)
+
+        response = make_response({"message": "Logged out"}, 200)
+        clear_session_cookie(response)
+        return response
+
+
+class LogoutEverywhere(Resource):
+    def post(self):
+        if g.current_user is None:
+            return {"message": "You must be logged in"}, 401
+
+        get_db().delete_user_sessions(g.current_user.userid)
+        response = make_response({"message": "Logged out everywhere"}, 200)
+        clear_session_cookie(response)
+        return response
 
 
 def setup_auth(app: Flask) -> None:
@@ -132,3 +162,5 @@ def setup_auth(app: Flask) -> None:
     api = Api(app)
     api.add_resource(Register, "/register")
     api.add_resource(Login, "/login")
+    api.add_resource(Logout, "/logout")
+    api.add_resource(LogoutEverywhere, "/logout-everywhere")

@@ -85,11 +85,17 @@ async function postJson(url, data) {
 			headers: { "Content-Type": "application/json" }, // Tell the server the body is JSON
 			body: JSON.stringify(data), // Turn the JavaScript object into a JSON string
 		});
-		const result = await response.json();
+		let result;
+		try {
+			result = await response.json();
+		} catch {
+			result = {
+				message: `The server returned an unexpected response (${response.status}). Please try again.`,
+			};
+		}
 		return { response, result };
 	} catch {
-		// fetch() throws if the server can't be reached, and .json() throws if the
-		// server sent back something that isn't JSON (like an HTML error page).
+		// fetch() throws if the server can't be reached.
 		return null;
 	}
 }
@@ -156,8 +162,27 @@ async function submitLoginForm(event) {
 
 	alert(reply.result.message || "Login failed. Please try again.");
 	if (reply.response.ok) {
-		hideModal("loginModal");
+		window.location.href = "/account";
 	}
+}
+
+// Runs when the logout button is clicked.
+async function logout() {
+	const reply = await postJson("/logout", {});
+	if (reply === null || !reply.response.ok) {
+		alert("Logout failed. Please try again.");
+		return;
+	}
+	window.location.href = "/";
+}
+
+async function logoutEverywhere() {
+	const reply = await postJson("/logout-everywhere", {});
+	if (reply === null || !reply.response.ok) {
+		alert(reply?.result.message || "Could not log out everywhere. Please try again.");
+		return;
+	}
+	window.location.href = "/";
 }
 
 // Remove the green/red validation styling from an input once the user starts
@@ -189,6 +214,8 @@ function attachEventListeners() {
 	// includes this script, but a page might not have every form on it.
 	document.getElementById("registerForm")?.addEventListener("submit", submitRegisterForm);
 	document.getElementById("loginForm")?.addEventListener("submit", submitLoginForm);
+	document.getElementById("logoutButton")?.addEventListener("click", logout);
+	document.getElementById("logoutEverywhereButton")?.addEventListener("click", logoutEverywhere);
 
 	for (const input of document.querySelectorAll("input")) {
 		input.addEventListener("input", clearValidation);

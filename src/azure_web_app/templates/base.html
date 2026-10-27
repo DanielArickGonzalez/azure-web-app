@@ -16,6 +16,10 @@
     <div class="navbar-nav">
       <a class="nav-link" href="{{ url_for('index') }}">Home</a>
       <a class="nav-link" href="{{ url_for('memes_page') }}">Meme Time Capsule</a>
+      {% if current_user %}
+      <a class="nav-link" href="{{ url_for('account') }}">My account</a>
+      <a class="nav-link" href="{{ url_for('members_page') }}">Members</a>
+      {% endif %}
     </div>
     {% include "components/account_nav.html" %}
   </div>
